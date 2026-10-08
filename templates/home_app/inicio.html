@@ -1,0 +1,96 @@
+{% extends 'home_app/base.html' %}
+{% load static %}
+
+{% block title %}Inicio - Catálogo de Películas{% endblock %}
+
+{% block content %}
+<!-- SECCIÓN HERO BANNER -->
+<section class="hero-banner p-4 p-md-5 mb-5 text-center shadow-lg">
+    <div class="py-3">
+        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger px-3 py-2 rounded-pill mb-3 fw-semibold">
+            <i class="bi bi-star-fill me-1"></i> Plataforma Oficial de Cine
+        </span>
+        <h1 class="display-4 fw-bold text-white mb-3">{{ titulo_seccion }}</h1>
+        <p class="lead text-secondary col-lg-8 mx-auto mb-4">
+            {{ subtitulo }}
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'home:peliculas_genero' genero_id='accion' %}" class="btn btn-cinehub px-4 py-2">
+                <i class="bi bi-fire me-1"></i> Ver Películas de Acción
+            </a>
+            <a href="{% url 'home:peliculas_genero' genero_id='ciencia_ficcion' %}" class="btn btn-outline-info px-4 py-2">
+                <i class="bi bi-rocket-takeoff-fill me-1"></i> Ver Ciencia Ficción
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- SECCIÓN DE GÉNEROS (BOOTSTRAP CARDS) -->
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 fw-bold text-light mb-1">
+                <i class="bi bi-film text-danger me-2"></i>Géneros Disponibles
+            </h2>
+            <p class="text-secondary small mb-0">Selecciona una categoría para explorar su catálogo completo de 10 títulos</p>
+        </div>
+        <span class="badge bg-dark border border-secondary px-3 py-2 text-secondary">
+            Total de géneros: <strong>{{ total_generos }}</strong>
+        </span>
+    </div>
+
+    <div class="row g-4">
+        {% for genero in generos %}
+        <div class="col-md-6">
+            <div class="card genre-card h-100 p-3">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 bg-{{ genero.color_badge }} bg-opacity-10 border border-{{ genero.color_badge }} border-opacity-25 rounded-3">
+                                <i class="bi {{ genero.icono }} fs-2 text-{{ genero.color_badge }}"></i>
+                            </div>
+                            <div>
+                                <h3 class="h4 fw-bold text-light mb-0">{{ genero.nombre }}</h3>
+                                <span class="badge bg-{{ genero.color_badge }} bg-opacity-25 text-{{ genero.color_badge }} border border-{{ genero.color_badge }} border-opacity-50 mt-1">
+                                    {{ genero.total_titulos }} Películas
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="card-text text-secondary mb-4 flex-grow-1">
+                        {{ genero.descripcion }}
+                    </p>
+
+                    <a href="{% url 'home:peliculas_genero' genero_id=genero.id %}" class="btn btn-outline-{{ genero.color_badge }} w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                        <span>Explorar Catálogo Completo</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted lead">No hay géneros cargados en este momento.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- SECCIÓN INFORMATIVA DE LA EVALUACIÓN -->
+<section class="card bg-black border border-secondary p-4 rounded-4 text-secondary">
+    <div class="row g-4 align-items-center">
+        <div class="col-md-8">
+            <h3 class="h5 fw-bold text-light mb-2"><i class="bi bi-info-circle-fill text-danger me-2"></i>Sobre esta Entrega</h3>
+            <p class="small mb-0">
+                Proyecto desarrollado por <strong>{{ estudiante }}</strong> cumpliendo los requerimientos de la Evaluación Sumativa 2: arquitectura MVT, configuración de rutas en la raíz con namespaces, manejo de datos en vistas y presentación responsiva en componentes Bootstrap.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'home:contacto' %}" class="btn btn-sm btn-outline-light">
+                <i class="bi bi-send me-1"></i> Probar Formulario POST
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

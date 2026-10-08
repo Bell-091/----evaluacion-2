@@ -1,0 +1,199 @@
+{% extends 'home_app/base.html' %}
+{% load static %}
+
+{% block title %}{{ genero.nombre }} - Catálogo de Películas{% endblock %}
+
+{% block content %}
+<!-- BREADCRUMB -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'home:inicio' %}" class="text-secondary text-decoration-none">
+                <i class="bi bi-house-door"></i> Inicio
+            </a>
+        </li>
+        <li class="breadcrumb-item active text-light fw-semibold" aria-current="page">
+            {{ genero.nombre }}
+        </li>
+    </ol>
+</nav>
+
+<!-- CABECERA DEL GÉNERO -->
+<div class="card bg-black border border-secondary p-4 rounded-4 mb-4 shadow">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi {{ genero.icono }} fs-3 text-{{ genero.color_badge }}"></i>
+                <h1 class="h2 fw-bold text-light mb-0">{{ genero.nombre }}</h1>
+            </div>
+            <p class="text-secondary mb-0">{{ genero.descripcion }}</p>
+        </div>
+        <div class="text-md-end">
+            <span class="badge bg-{{ genero.color_badge }} bg-opacity-25 text-{{ genero.color_badge }} border border-{{ genero.color_badge }} px-3 py-2 fs-6">
+                Mostrando {{ total_peliculas }} películas
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- BARRA DE FILTROS Y BÚSQUEDA -->
+<div class="card bg-dark border border-secondary p-3 mb-5 shadow-sm">
+    <form method="GET" class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-black border-secondary text-secondary">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="q" class="form-control bg-black text-light border-secondary" placeholder="Buscar por título o director..." value="{{ busqueda }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="anio" class="form-select bg-black text-light border-secondary">
+                <option value="">Todos los años</option>
+                <option value="2020" {% if filtro_anio == '2020' %}selected{% endif %}>Desde 2020 en adelante</option>
+                <option value="2010" {% if filtro_anio == '2010' %}selected{% endif %}>Desde 2010 en adelante</option>
+                <option value="2000" {% if filtro_anio == '2000' %}selected{% endif %}>Desde 2000 en adelante</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-{{ genero.color_badge }} flex-grow-1">
+                <i class="bi bi-funnel-fill me-1"></i> Filtrar
+            </button>
+            {% if busqueda or filtro_anio %}
+                <a href="{% url 'home:peliculas_genero' genero_id=genero.id %}" class="btn btn-outline-secondary" title="Limpiar filtros">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- GRID RESPONSIVO CON LAS PELÍCULAS (BOOTSTRAP CARDS) -->
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+    {% for pelicula in peliculas %}
+    <div class="col">
+        <div class="card movie-card h-100">
+            <!-- Contenedor del póster / imagen con fallback -->
+            <div class="movie-poster-container">
+                <img src="{% static pelicula.imagen %}" 
+                     class="movie-poster" 
+                     alt="{{ pelicula.titulo }}" 
+                     onerror="this.onerror=null; this.src='{{ pelicula.imagen_remota }}';">
+                
+                <!-- Badge superior condicional -->
+                <div class="movie-overlay-badge">
+                    {% if pelicula.destacada %}
+                        <span class="badge bg-warning text-dark fw-bold shadow">
+                            <i class="bi bi-award-fill"></i> TOP
+                        </span>
+                    {% elif pelicula.anio >= 2020 %}
+                        <span class="badge bg-success shadow">NUEVA</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contenido de la tarjeta -->
+            <div class="card-body p-3 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge bg-secondary bg-opacity-50 text-light small">{{ pelicula.anio }}</span>
+                    <span class="text-warning small fw-bold">
+                        <i class="bi bi-star-fill text-warning"></i> {{ pelicula.calificacion }}
+                    </span>
+                </div>
+
+                <h3 class="card-title h6 fw-bold text-light mb-2 text-truncate" title="{{ pelicula.titulo }}">
+                    {{ pelicula.titulo }}
+                </h3>
+
+                <p class="card-text small text-secondary mb-1 text-truncate">
+                    <i class="bi bi-person-video2 text-muted me-1"></i> {{ pelicula.director }}
+                </p>
+
+                <p class="card-text small text-secondary mb-3">
+                    <i class="bi bi-stopwatch text-muted me-1"></i> {{ pelicula.duracion }}
+                </p>
+
+                <!-- Botón de apertura de Modal Bootstrap -->
+                <button type="button" class="btn btn-sm btn-outline-light w-100 mt-auto fw-semibold" data-bs-toggle="modal" data-bs-target="#modalPelicula{{ pelicula.id }}">
+                    <i class="bi bi-eye-fill me-1"></i> Ver Detalles
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL DE DETALLES BOOTSTRAP PARA CADA PELÍCULA -->
+        <div class="modal fade" id="modalPelicula{{ pelicula.id }}" tabindex="-1" aria-labelledby="modalLabel{{ pelicula.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-content-dark shadow-lg">
+                    <div class="modal-header border-secondary">
+                        <h4 class="modal-title h5 fw-bold text-light" id="modalLabel{{ pelicula.id }}">
+                            {{ pelicula.titulo }} <span class="text-secondary fw-normal">({{ pelicula.anio }})</span>
+                        </h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-{{ genero.color_badge }}">{{ genero.nombre }}</span>
+                            <span class="badge bg-secondary">{{ pelicula.duracion }}</span>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> {{ pelicula.calificacion }}/10 IMDb</span>
+                        </div>
+
+                        <h5 class="h6 text-secondary fw-bold text-uppercase mb-1">Sinopsis</h5>
+                        <p class="text-light mb-3">{{ pelicula.sinopsis }}</p>
+
+                        <div class="bg-black p-3 rounded-3 border border-secondary mb-2">
+                            <div class="row small g-2">
+                                <div class="col-6">
+                                    <span class="text-secondary">Director:</span>
+                                    <p class="text-light fw-semibold mb-0">{{ pelicula.director }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <span class="text-secondary">Año de estreno:</span>
+                                    <p class="text-light fw-semibold mb-0">{{ pelicula.anio }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if pelicula.destacada %}
+                            <div class="alert alert-warning border-warning bg-black text-warning small mb-0 mt-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle-fill fs-5"></i>
+                                <span>Esta película es una obra destacada y altamente recomendada por el catálogo.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 py-5 text-center">
+        <div class="p-5 bg-dark border border-secondary rounded-4">
+            <i class="bi bi-camera-video-off fs-1 text-secondary mb-3 d-block"></i>
+            <h4 class="h5 text-light fw-bold">No se encontraron películas</h4>
+            <p class="text-secondary small mb-3">Intenta cambiar los términos de búsqueda o los filtros aplicados.</p>
+            <a href="{% url 'home:peliculas_genero' genero_id=genero.id %}" class="btn btn-sm btn-outline-light">
+                Restablecer Filtros
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- NAVEGACIÓN INFERIOR ENTRE GÉNEROS -->
+<div class="mt-5 pt-4 border-top border-secondary d-flex justify-content-between align-items-center">
+    <a href="{% url 'home:inicio' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Volver a Géneros
+    </a>
+    {% if genero.id == 'accion' %}
+        <a href="{% url 'home:peliculas_genero' genero_id='ciencia_ficcion' %}" class="btn btn-outline-info">
+            Ir a Ciencia Ficción <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    {% else %}
+        <a href="{% url 'home:peliculas_genero' genero_id='accion' %}" class="btn btn-outline-danger">
+            Ir a Acción <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    {% endif %}
+</div>
+{% endblock %}

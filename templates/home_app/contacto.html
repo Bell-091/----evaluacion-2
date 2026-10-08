@@ -1,0 +1,104 @@
+{% extends 'home_app/base.html' %}
+{% load static %}
+
+{% block title %}Sugerir Película - CineHub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- BREADCRUMB -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home:inicio' %}" class="text-secondary text-decoration-none">Inicio</a></li>
+                <li class="breadcrumb-item active text-light" aria-current="page">Sugerir Película</li>
+            </ol>
+        </nav>
+
+        <div class="card bg-black border border-secondary p-4 p-md-5 rounded-4 shadow-lg">
+            <div class="text-center mb-4">
+                <div class="p-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-circle d-inline-block mb-3">
+                    <i class="bi bi-send-plus-fill fs-2 text-danger"></i>
+                </div>
+                <h1 class="h3 fw-bold text-light mb-2">Sugiere una Nueva Película</h1>
+                <p class="text-secondary small">Envía tus recomendaciones para incorporarlas al catálogo de la plataforma.</p>
+            </div>
+
+            <!-- MENSAJE DE CONFIRMACIÓN AL ENVIAR EL FORMULARIO (POST) -->
+            {% if mensaje_enviado %}
+                <div class="alert alert-success border-success bg-dark text-success p-4 rounded-3 mb-4 shadow">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-check-circle-fill fs-4"></i>
+                        <h2 class="h5 fw-bold mb-0 text-success">¡Sugerencia enviada con éxito!</h2>
+                    </div>
+                    <p class="small mb-3 text-light">Hemos recibido correctamente tus datos enviados desde la vista Django:</p>
+                    
+                    <div class="bg-black p-3 rounded-3 border border-success border-opacity-50">
+                        <ul class="list-unstyled mb-0 small text-light">
+                            <li class="mb-1"><strong>Nombre:</strong> {{ datos.nombre }}</li>
+                            <li class="mb-1"><strong>Correo Electrónico:</strong> {{ datos.correo }}</li>
+                            <li class="mb-1"><strong>Género:</strong> {{ datos.genero|title }}</li>
+                            <li class="mb-1"><strong>Película Sugerida:</strong> {{ datos.pelicula }}</li>
+                            {% if datos.comentario %}
+                            <li><strong>Comentario / Reseña:</strong> {{ datos.comentario }}</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- FORMULARIO CON MÉTODO POST Y TOKEN DE SEGURIDAD CSRF -->
+            <form method="POST" action="{% url 'home:contacto' %}" class="needs-validation">
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label text-light small fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control bg-dark text-light border-secondary" id="nombre" name="nombre" placeholder="Ej: Reinaldo Opaso" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="correo" class="form-label text-light small fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control bg-dark text-light border-secondary" id="correo" name="correo" placeholder="correo@institucion.cl" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="genero_elegido" class="form-label text-light small fw-semibold">Género de la Película <span class="text-danger">*</span></label>
+                        <select class="form-select bg-dark text-light border-secondary" id="genero_elegido" name="genero_elegido" required>
+                            <option value="" selected disabled>Selecciona un género...</option>
+                            {% for g in generos_disponibles %}
+                                <option value="{{ g.nombre }}">{{ g.nombre }}</option>
+                            {% endfor %}
+                            <option value="otro">Otro Género</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="pelicula_sugerida" class="form-label text-light small fw-semibold">Título de la Película <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-film"></i></span>
+                            <input type="text" class="form-control bg-dark text-light border-secondary" id="pelicula_sugerida" name="pelicula_sugerida" placeholder="Ej: Oppenheimer (2023)" required>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="comentario" class="form-label text-light small fw-semibold">¿Por qué recomiendas esta película?</label>
+                        <textarea class="form-control bg-dark text-light border-secondary" id="comentario" name="comentario" rows="4" placeholder="Describe brevemente su trama, director o por qué merece estar en el catálogo..."></textarea>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-cinehub w-100 py-3 fw-bold fs-6">
+                            <i class="bi bi-send-fill me-2"></i> Enviar Recomendación
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
