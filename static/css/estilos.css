@@ -1,0 +1,139 @@
+/* ==========================================================================
+   ESTILOS PERSONALIZADOS - CINEHUB (EVALUACIÓN 2 DJANGO)
+   ========================================================================== */
+
+:root {
+    --primary-red: #e50914;
+    --primary-red-hover: #b80710;
+    --dark-bg: #0f1016;
+    --dark-surface: #181a24;
+    --dark-card: #202330;
+    --accent-blue: #38bdf8;
+    --text-muted: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: #f8fafc;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+}
+
+/* Navbar Personalizada */
+.custom-navbar {
+    background: rgba(15, 16, 22, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand-logo {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--primary-red) !important;
+    text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+}
+
+/* Tarjetas y Efectos Hover */
+.movie-card {
+    background-color: var(--dark-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.6);
+    border-color: rgba(229, 9, 20, 0.4);
+}
+
+.movie-poster-container {
+    position: relative;
+    overflow: hidden;
+    height: 280px;
+    background-color: #0b0c10;
+}
+
+.movie-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.movie-card:hover .movie-poster {
+    transform: scale(1.05);
+}
+
+.movie-overlay-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Tarjetas de Géneros */
+.genre-card {
+    background: linear-gradient(145deg, #1e2230, #13151f);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.genre-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+
+/* Hero Section */
+.hero-banner {
+    background: radial-gradient(circle at 80% 20%, rgba(229, 9, 20, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #181a24 0%, #0f1016 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+}
+
+/* Botones con estilo */
+.btn-cinehub {
+    background-color: var(--primary-red);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-cinehub:hover {
+    background-color: var(--primary-red-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+}
+
+/* Modales con tema oscuro */
+.modal-content-dark {
+    background-color: var(--dark-surface);
+    border: 1px solid var(--border-color);
+    color: #f8fafc;
+    border-radius: 16px;
+}
+
+/* Scrollbar estilizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f1016;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2d3142;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #474d66;
+}
